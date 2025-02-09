@@ -31,7 +31,7 @@ export const PRODUCTS = [
     price: "R$ 10,60",
     modelConfig: {
       scale: "3 3 3",
-      rotation: "0 -45 0",
+      rotation: "0 -90 0",
       initialPosition: "-8 0 0",
     },
   },
