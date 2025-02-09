@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, TouchEvent } from "react";
 import { ARScene } from "@/components/ARScene";
 import { PRODUCTS } from "@/constants/products";
 
 export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const touchStartX = useRef(0);
+  const SWIPE_THRESHOLD = 50; // Mínima distância para considerar como swipe
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % PRODUCTS.length);
@@ -15,10 +17,33 @@ export default function Home() {
     setCurrentIndex((prev) => (prev - 1 + PRODUCTS.length) % PRODUCTS.length);
   };
 
+  const handleTouchStart = (e: TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX;
+
+    if (Math.abs(diff) > SWIPE_THRESHOLD) {
+      if (diff > 0) {
+        // Swipe para esquerda
+        handleNext();
+      } else {
+        // Swipe para direita
+        handlePrev();
+      }
+    }
+  };
+
   const currentProduct = PRODUCTS[currentIndex];
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main
+      className="flex min-h-screen flex-col items-center justify-between p-24"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <ARScene currentIndex={currentIndex} />
 
       <div className="telaQuadrados">
